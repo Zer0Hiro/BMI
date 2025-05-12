@@ -1,7 +1,7 @@
+#include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <math.h>
 
 /*
  WELCOME THIS SMALL PROGRAM WILL CALCULATE BMI FOR ONE OR MORE PEOPLE
@@ -9,8 +9,9 @@
     1. Input new person [V]
     2. Sort by id [X]
     3. Save txt file of your results (can be also sorted by id) [X]
-    4. Make dynamical table
-    5. Sort by a few ids
+    4. Make dynamical table [X]
+    5. Sort by a few ids [X]
+    6. Delete elements [X]
 */
 
 typedef struct PERSON
@@ -23,19 +24,31 @@ typedef struct PERSON
 } Person;
 
 Person *NewId(Person *arr, int id);
-void Table(int size, Person *arr);
+void Table(int size, Person *arr, int len);
 Person *Sort(Person *arr, int id);
+void linePrint(int len);
 void WrongInput();
 
 int main()
 {
     Person *arr = NULL;
-    int number = 1;
+    int number = 1, test;
+
+    // Table info
+    int length = 10;
+
     while (1)
     {
-        arr = NewId(arr,number);
+        arr = NewId(arr, number);
+        Table(number, arr, length);
+
+        // TEMPORARY TEST (REMOVABLE)
+        printf("Contine?");
+        if (scanf("%d", &test) != 1) exit(1);
+
         number++;
     }
+
     return 1;
 }
 
@@ -45,8 +58,11 @@ Person *NewId(Person *arr, int id)
     char buffer[100];
     int NameLen, len;
 
+    int ch;
+    while ((ch = getchar()) != '\n');
+
     // Allocate memory for new id
-    Person *temp = (Person *)realloc(arr, id*sizeof(Person));
+    Person *temp = (Person *)realloc(arr, id * sizeof(Person));
     if (temp == NULL)
     {
         printf("Not enough Memory");
@@ -57,13 +73,14 @@ Person *NewId(Person *arr, int id)
     // Check new position (assign ID)
     temp[id - 1].id = id;
 
-    // Get name of person
+    // Clear console
     system("cls");
+
+    // Get name of person
     printf("\nEnter name of person: ");
     fgets(buffer, sizeof(buffer), stdin);
     len = strlen(buffer);
-    if (len > 0 && buffer[len - 1] == '\n')
-        buffer[len - 1] = '\0';
+    if (len > 0 && buffer[len - 1] == '\n') buffer[len - 1] = '\0';
 
     temp[id - 1].name = (char *)malloc(len + 1);
     if (temp[id - 1].name == NULL)
@@ -90,8 +107,10 @@ Person *NewId(Person *arr, int id)
     rewind(stdin);
 
     // Calculate BMI
-    temp[id - 1].BMI = temp[id - 1].weight / pow((temp[id - 1].height / 100), 2);
+    temp[id - 1].BMI =
+        temp[id - 1].weight / pow((temp[id - 1].height / 100), 2);
 
+    system("cls");
     return temp;
 }
 
@@ -103,9 +122,33 @@ void WrongInput()
 }
 
 // This function will create table with buttons
-void Table(int size, Person *arr)
+void Table(int size, Person *arr, int len)
 {
+    int i;
+    linePrint(len);
+    // Print HEADER
+    printf("| %-3s | %-8s | %-8s | %-8s | %-5s |\n", "ID", "NAME", "WEIGHT",
+           "HEIGHT", "BMI");
+    // Print each person's data
+    for (i = 0; i < size; i++)
+    {
+        printf("| %-3d | %-8s | %-8.1f | %-8.1f | %-5.2f |\n", arr[i].id,
+               arr[i].name, arr[i].weight, arr[i].height, arr[i].BMI);
+    }
+    linePrint(len);
+    // Closing line for table
+    printf("|| 1 ADD || 2 REMOVE || 3 SEARCH || 4 SAVE ||");
+}
+
+void linePrint(int len)
+{
+    int i, linelen = 32 + len;
     printf("+");
-    for()
-    printf("-")
+    for (i = 0; i < linelen; i++)
+    {
+        if (i == 5 || i == len + 5 || i == len + 15 || i == len + 25)
+            printf("+");
+        printf("-");
+    }
+    printf("+\n");
 }
